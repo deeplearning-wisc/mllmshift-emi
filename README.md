@@ -1,4 +1,4 @@
-# [Understanding Multimodal LLMs Under Distribution Shifts: An Information-Theoretic Approach (ICML'25)](https://arxiv.org/abs/2502.00577)
+# [Understanding Multimodal LLMs Under Distribution Shifts: An Information-Theoretic Approach (ICML'25)](https://arxiv.org/abs/2502.00577v2)
 > by [Changdae Oh](https://changdaeoh.github.io/)<sup>1</sup>, [Zhen Fang](https://fang-zhen.github.io/)<sup>2</sup>, [Shawn Im](https://shawn-im.github.io/)<sup>1</sup>, [Xuefeng Du](https://d12306.github.io/)<sup>1</sup>, and [Yixuan Li](https://pages.cs.wisc.edu/~sharonli/)<sup>1</sup>.
 > <br/>
 > <sup>1</sup>[University of Wisconsin--Madison](https://www.wisc.edu/), <sup>2</sup>[University of Technology Sydney](https://www.uts.edu.au/)
