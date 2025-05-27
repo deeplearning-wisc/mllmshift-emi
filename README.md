@@ -21,20 +21,20 @@ _In this repository, we highlight our proposals with corresponding code and inst
 * On 61 types of distribution shifts, we validated that empirical EMI estimates have strong correlation with relative preference scores, and EMID upper bound estimates consistently correlated with EMID estimates.
 
 ### Procedure
-> Our project was built on top of `LLaVA codebase`, and we only provide the pipeline for EMI, EMID, UpperBound computations here, so you can leverage more information about MLLM training and inference from LLaVA [paper](https://arxiv.org/abs/2304.08485) and [repository](https://github.com/haotian-liu/LLaVA/tree/main). 
+> Our project was built on top of `LLaVA codebase`, and we only provide the pipeline for EMI, EMID, and UpperBound computations here, so you can leverage more information about MLLM training and inference from LLaVA [paper](https://arxiv.org/abs/2304.08485) and [repository](https://github.com/haotian-liu/LLaVA/tree/main). 
 
 * Basic information
   * EMI consumes a `(image_query:PILImage, text_query:str, model_response:str, GT_response:str)` tuple as an input to access the quality of a model response.
-  * EMID and EMID UB consumes a pair of two tuples from different data distributions to measure the robustness of model response qualities across different input distributions.
+  * EMID and EMID UB consume a pair of two tuples from different data distributions to measure the robustness of model response qualities across different input distributions.
   * We compute all the above quantities on top of embeddings from pre-trained encoder models such as CLIP-VIT and RoBERTa to bypass non-trivial MI modeling on raw input space.
 
 
-* EMID and its upper bound estimation on a pair of two datasets, e.g., one of in-distribtuion (ID) and one of out-of-distribution (OOD)
+* EMID and its upper bound estimation on a pair of two datasets, e.g., one of in-distribution (ID) and one of out-of-distribution (OOD)
   1. Do inference on all datasets of your interest to gather responses $Y_{\theta}$ of your models given input queries.
   2. Get embedding vectors $\tilde{X}_{v}$, $\tilde{X}_{t}$, $\tilde{Y}_{\theta}$, and $\tilde{Y}_{gt}$ for the `(image_query, text_query, model_response, GT_response)` tuples with pre-trained vision and text encoders. If you don't have ground truth (GT) responses for datasets, get them by querying a reference model, e.g., GPT-4o.
   3. (Optional) Construct an embedding-pair dataset $\{(\tilde{X},\tilde{Y})\}$, and train a neural MI estimator on it.
   4. You can compute EMI and EMID by feeding embedding tuples into the (pre-)trained MI estimator.
-  5. You can also compute EMID UB on top of embedding tuples with RJSD estimator (See `JSD_cov()` function in `main.py`)
+  5. You can also compute EMID UB on top of embedding tuples with the RJSD estimator (See `JSD_cov()` function in `main.py`)
 
 # Environment
 Exactly the same as the env of llava-v1.5 with `datasets==3.5.0` installation.
@@ -51,15 +51,16 @@ pip install datasets==3.5.0
 ```
 
 # Data Preparation
-* To test new models on the llava-bench shift benchmarks, you need to prepare model responses' on all kinds of distribution shifts scenarios (28 for natural, 35 for synthetic).
-* You can access our two types of benchmarks through Hugging Face dataset hub in public, [`llavabench-shift-synthetic-v1`](https://huggingface.co/datasets/changdae/llavabench-shift-synthetic-v1) and [`llavabench-shift-natural-v1`](https://huggingface.co/datasets/changdae/llavabench-shift-natural-v1), that contain image query, text query, and gt response (gpt4).
+* To test new models on the llava-bench shift benchmarks, you need to prepare model responses on all kinds of distribution shifts scenarios (28 for natural, 35 for synthetic).
+* You can access our two types of benchmarks through Hugging Face dataset hub in public, [`llavabench-shift-synthetic-v1`](https://huggingface.co/datasets/changdae/llavabench-shift-synthetic-v1) and [`llavabench-shift-natural-v1`](https://huggingface.co/datasets/changdae/llavabench-shift-natural-v1), which contain image query, text query, and gt response (gpt4).
+  * To generate synthetically perturbed datasets, we adopted defocus blur and frost for visual perturbations, and keyboard typo and synonym replacement as textual perturbations by leveraging [`MM_Robustness`](https://github.com/Jielin-Qiu/MM_Robustness) codebase.
 * Refer to the [document for evaluation from LLaVA repository](https://github.com/haotian-liu/LLaVA/blob/main/docs/Evaluation.md) to get **model responses** by doing inference with your MLLMs.
 
 # Run
-* We provide a **pre-trained weight for CLUB MI estimator** at `estimator_ckpt/CLUB_global.pt`, so you don't need to re-train MI estimator from scratch.
-  * In contrast to that used in our paper, this estimator was trained on a pooled dataset of synthetic and natural shifts dataset with >10K samples, whereas we previously used two separate MI estimators for synthetic and natural shifts.
-    * So the replication results would be slightly different with numbers in the paper.
-  * [`CAUTION!`] if your downstream tasks are significantly distinct from the llava-bench family of datasets, you may need to retrain it.
+* We provide a **pre-trained weight for CLUB MI estimator** at `estimator_ckpt/CLUB_global.pt`, so you don't need to re-train the MI estimator from scratch.
+  * In contrast to that used in our paper, this estimator was trained on a pooled dataset of synthetic and natural shift datasets with >10K samples, whereas we previously used two separate MI estimators for synthetic and natural shifts.
+    * So the replication results would be slightly different from the numbers in the paper.
+  * [`CAUTION!`] If your downstream tasks are significantly distinct from the llava-bench family of datasets, you may need to retrain it.
 * For easy reproduction, we also provide the responses generated from `llava-v1.5-13b` and `llava-v1.6-vicuna-13b` models under the path `data/{DATA_SPLIT_NAME}-{MODEL_NAME}.jsonl`.
 
 ```linux
@@ -74,7 +75,7 @@ python main.py --model_name llava-v1.6-vicuna-13b --shift_type NATURAL
 
 
 # Citation
-If this repository was useful to your works, please consider to cite our paper!
+If this repository was useful to your works, please consider citing our paper!
 ```
 @inproceedings{
 oh2025understanding,
@@ -88,3 +89,4 @@ year={2025},
 # Acknowledgement
 * We appreciate the amazing work with a fully open codebase from the [`LLaVA`](https://github.com/haotian-liu/LLaVA) authors that enables us to initiate our project.
 * We are also sincerely thankful for the authors of [`CLUB`](https://github.com/Linear95/CLUB) and [`RepresentationJSD`](https://github.com/uk-cliplab/representationJSD/tree/main) that allow us to build a reliable estimation framework for the mutual information and Jensen-Shannon divergence.
+* We thank the authors of [`MM_Robustness`](https://github.com/Jielin-Qiu/MM_Robustness) repository used to construct our synthetic shift benchmarks.
