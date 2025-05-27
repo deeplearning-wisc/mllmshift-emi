@@ -30,8 +30,8 @@ _In this repository, we highlight our proposals with corresponding code and inst
 
 
 * EMID and its upper bound estimation on a pair of two datasets, e.g., one of in-distribution (ID) and one of out-of-distribution (OOD)
-  1. Do inference on all datasets of your interest to gather responses $Y_{\theta}$ of your models given input queries.
-  2. Get embedding vectors $\tilde{X}_{v}$, $\tilde{X}_{t}$, $\tilde{Y}_{\theta}$, and $\tilde{Y}_{gt}$ for the `(image_query, text_query, model_response, GT_response)` tuples with pre-trained vision and text encoders. If you don't have ground truth (GT) responses for datasets, get them by querying a reference model, e.g., GPT-4o.
+  1. Do inference on all datasets of your interest to gather responses $Y\_{\theta}$ of your models given input queries.
+  2. Get embedding vectors $\tilde{X}\_{v}$, $\tilde{X}\_{t}$, $\tilde{Y}\_{\theta}$, and $\tilde{Y}\_{gt}$ for the `(image_query, text_query, model_response, GT_response)` tuples with pre-trained vision and text encoders. If you don't have ground truth (GT) responses for datasets, get them by querying a reference model, e.g., GPT-4o.
   3. (Optional) Construct an embedding-pair dataset $\{(\tilde{X},\tilde{Y})\}$, and train a neural MI estimator on it.
   4. You can compute EMI and EMID by feeding embedding tuples into the (pre-)trained MI estimator.
   5. You can also compute EMID UB on top of embedding tuples with the RJSD estimator (See `JSD_cov()` function in `main.py`)
